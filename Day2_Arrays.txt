@@ -1,0 +1,315 @@
+Q.16.Write an efficient program to find the sum of the contiguous subarray within a one-dimensional array of numbers that has the largest sum.
+using kadane's algorithm: at least one positive int:
+A = [-2, -3, 4, -1, -2, 1, 5, -3]
+B = [6, 7, 20, 80, 100]
+C = [3, 4, 15, 20, 30, 70, 80, 120]
+def max_subarray_sum(arr):
+    max_so_far = arr[0]
+    max_ending_here = 0
+    for i in range(0,len(arr)):
+        max_ending_here += arr[i]
+        if max_ending_here < 0:
+            max_ending_here = 0
+        elif max_so_far < max_ending_here:
+            max_so_far = max_ending_here
+    return max_so_far
+
+
+print(max_subarray_sum(A))
+print(max_subarray_sum(B))
+
+using Dynamic Programming:
+A = [-2, -3, 4, -1, -2, 1, 5, -3]
+B = [6, 7, 20, 80, 100]
+C = [3, 4, 15, 20, 30, 70, 80, 120]
+def max_subarray_sum(arr):
+    max_so_far = arr[0]
+    curr_max = arr[0]
+    for i in range(1,len(arr)):
+        curr_max = max(arr[i], curr_max+arr[i])
+        max_so_far = max(max_so_far,curr_max)
+    return max_so_far
+
+
+print(max_subarray_sum(A))
+print(max_subarray_sum(B))
+
+
+Q.17.Given an array of A of n integers and an array B of m integers find the Maximum Contiguous Subarray Sum of array A such that any element of array B is not present in that subarray.
+using hashmap and kadane's algorithm:
+A = [1, 7, -10, 6, 2]
+B = [5, 6, 7, 1]
+from sys import maxsize
+def max_subarray_sum(arr,B):
+    map = {}
+    max_so_far = -maxsize-1
+    curr_max = 0
+    for i in range(len(B)):
+        if B[i] not in map:
+            map[B[i]] = 0
+        map[B[i]] = 1
+    for j in range(len(arr)):
+        if curr_max < 0 or (arr[j] in map and map[arr[j]]==1):
+            curr_max = 0
+            continue
+        curr_max = max(arr[j], curr_max+arr[j])
+        if max_so_far < curr_max:
+            max_so_far = curr_max
+    return max_so_far
+
+
+print(max_subarray_sum(A,B))
+A = [3, 4, 5, -4, 6]
+B = [1, 8, 5]
+print(max_subarray_sum(A,B))
+
+it can be done in parts - 1.is_present_B 2.kadane's algo 3.calling in function
+
+Q.18.Given an array arr[]. Find the maximum value of prefix sum which is also suffix sum for index i in arr[].
+A = [-1, 2, 3, 0, 3, 2, -1]
+B = [-2, 5, 3, 1, 2, 6, -4, 2]
+from sys import maxsize
+def max_equilibrium_sum(arr):
+    max_so_far = -maxsize-1
+    ss = sum(arr)
+    prefix_sum =0
+    for i in range(len(arr)):
+        prefix_sum += arr[i]
+        if prefix_sum == ss:
+            max_so_far = max(max_so_far,prefix_sum)
+        ss -= arr[i]
+    return max_so_far
+
+print(max_equilibrium_sum(A))
+print(max_equilibrium_sum(B))
+
+Q.19.Maximum Triplet Sum in array
+using sorting - nlogn:
+
+A = [1, 2, 3, 0, -1, 8, 10]
+B = [9, 8, 20, 3, 4, -1, 0]
+def max_triplet_sum(arr):
+    arr.sort(reverse = True)
+    return arr[0]+arr[1]+arr[2]
+
+print(max_triplet_sum(A))
+print(max_triplet_sum(B))
+
+using normal approach -O(n):
+
+A = [1, 2, 3, 0, -1, 8, 10]
+B = [9, 8, 20, 3, 4, -1, 0]
+from sys import maxsize
+def max_triplet_sum(arr):
+    maxA = -maxsize-1
+    maxB = -maxsize-1
+    maxC = -maxsize-1
+    for i in range(len(arr)):
+        if arr[i] > maxA:
+            maxC = maxB
+            maxB = maxA
+            maxA = arr[i]
+        elif arr[i] > maxB:
+            maxC = maxB
+            maxB = arr[i]
+        elif arr[i] > maxC:
+            maxC = arr[i]
+    return maxA+maxB+maxC
+
+print(max_triplet_sum(A))
+print(max_triplet_sum(B))
+
+Q.20.Three arrays of same size are given. Find a triplet such that maximum – minimum in that triplet is minimum of all the triplets. A triplet should be selected in a way such that it should have one number from each of the three given arrays. 
+If there are 2 or more smallest difference triplets, then the one with the smallest sum of its elements should be displayed.
+A = [5, 2, 8]
+B = [10, 7, 12]
+C = [9, 14, 6]
+from sys import maxsize
+def maximum(a,b,c):
+    return max(max(a,b),c)
+def minimum(a,b,c):
+    return min(min(a,b),c)
+def smallest_diff_triplet(arr1,arr2,arr3):
+    arr1.sort()
+    arr2.sort()
+    arr3.sort()
+    res_min, res_max , res_mid = 0,0,0
+    i,j,k = 0,0,0
+    diff = maxsize
+    while (i < len(arr1) and j < len(arr2) and k < len(arr3)):
+        sum_ = arr1[i]+arr2[j]+arr3[k]
+        max_ = maximum(arr1[i],arr2[j],arr3[k])
+        min_ = minimum(arr1[i],arr2[j],arr3[k])
+        if (min_==arr1[i]):
+            i += 1
+        elif (min_==arr2[j]):
+            j+=1
+        elif min_==arr3[k] :
+            k+=1
+
+        if diff >(max_-min_):
+            diff = max_ - min_
+            res_max = max_
+            res_mid = sum_ - (max_ + min_)
+            res_min = min_
+    return (res_max,res_mid,res_min)
+print(smallest_diff_triplet(A,B,C))
+
+Q.21.Print all triplets in sorted array that form AP
+A = [2, 6, 9, 12, 17, 22, 31, 32, 35, 42]
+def triplets_AP(arr):
+    for i in range(1, len(arr)-1):
+        j = i - 1
+        k = i + 1
+        while j >= 0 and k < len(arr):
+            if arr[j]+arr[k] == 2 * arr[i]:
+                print(arr[j],arr[i],arr[k])
+                k += 1
+                j -= 1
+            elif arr[j] + arr[k] < 2 * arr[i]:
+                k += 1
+            else:
+                j -= 1
+
+print(triplets_AP(A))
+
+Q.22.Given an unsorted array and a number n, find if there exists a pair of elements in the array whose difference is n.
+using sorting and pointers:
+A = [5, 20, 3, 2, 50, 80]
+B = [90, 70, 20, 80, 50]
+def diff_pair(arr,n):
+    arr.sort()
+    i,j = 0,1
+    while i < len(arr) and j < len(arr):
+        if i != j and arr[j] - arr[i] == n:
+            return (arr[i], arr[j])
+        elif arr[j] - arr[i] < n:
+            j += 1
+        else:
+            i += 1
+    return -1
+n= 78
+print(diff_pair(A,n))
+n = 45
+print(diff_pair(B,n))
+
+using hashmap:
+A = [5, 20, 3, 2, 50, 80]
+B = [90, 70, 20, 80, 50]
+def diff_pair(arr,n):
+    map ={}
+    for i in range(len(arr)):
+        if arr[i] in map:
+            map[arr[i]] += 1
+            if(n==0 and map[arr[i]]>1):
+                return (arr[i],arr[i])
+        else:
+            map[arr[i]] = 1
+    if n==0:
+        return -1
+    for j in range(len(arr)):
+        if n+arr[j] in map.keys():
+            return (arr[j],n+arr[j])
+    return -1
+
+n= 78
+print(diff_pair(A,n))
+n = 45
+print(diff_pair(B,n))
+
+Q.23.Given an array of positive and negative numbers, find if there is a subarray (of size at-least one) with 0 sum.
+using hashmap:
+A = [4, 2, -3, 1, 6]
+B = [-3, 2, 3, 1, 6]
+def zerosum_subarray(arr):
+    total_sum = 0
+    map = set()
+    for i in range(len(arr)):
+        total_sum += arr[i]
+        if total_sum == 0 or total_sum in map:
+            return True
+        map.add(total_sum)
+    return False
+
+print(zerosum_subarray(A))
+print(zerosum_subarray(B))
+
+Q.24.Given an array where difference between adjacent elements is 1, write an algorithm to search for an element in the array and return the position of the element (return the first occurrence).
+A = [8, 7, 6, 7, 6, 5, 4, 3, 2, 3, 4, 3]
+B = [1, 2, 3, 4, 5, 4]
+def adjecent_diff(arr,x):
+    i = 0
+    while(i < len(arr)):
+        if arr[i] == x:
+            return i
+        i = i+abs(arr[i]-x)
+    return -1
+x = 3
+print(adjecent_diff(A,x))
+x = 5
+print(adjecent_diff(B,x))
+
+Q.25.Given an array of n integers, find the third largest element. All the elements in the array are distinct integers.
+A = [1, 14, 2, 16, 10, 20]
+B = [19, -10, 20, 14, 2, 16, 10]
+from sys import maxsize
+def third_largest(arr):
+    if len(arr) < 3:
+        return -1
+    first = arr[0]
+    second = -maxsize-1
+    third = -maxsize-1
+    for i in range(1,len(arr)):
+        if arr[i] > first:
+            third = second
+            second = first
+            first = arr[i]
+        elif arr[i] > second:
+            third = second
+            second = arr[i]
+        elif arr[i] > third:
+            third = arr[i]
+    return third
+
+print(third_largest(A))
+print(third_largest(B))
+
+Q.26.We have an array of integers and we have to find two such elements in the array such that sum of these two elements is equal to the sum of rest of elements in array. 
+A = [2, 11, 5, 1, 4, 7]
+B = [2, 4, 2, 1, 11, 15]
+
+def sum_pair(arr):
+    total = 0
+    map = set()
+    for i in range(len(arr)):
+        total += arr[i]
+    if total %2 != 0:
+        return -1
+    total = total//2
+    for i in range(len(arr)):
+        val = total - arr[i]
+        if arr[i] not in map:
+            map.add(arr[i])
+        if val in map:
+            return (arr[i], val)
+    return -1
+print(sum_pair(A))
+print(sum_pair(B))
+
+Q.27.Given an unsorted array that may contain duplicates. Also given a number k which is smaller than size of array. Write a function that returns true if array contains duplicates within k distance.
+A = [1, 2, 3, 4, 1, 2, 3, 4]
+B = [1, 2, 3, 1, 4, 5]
+
+def check_duplicate(arr,k):
+    map = []
+    for i in range(len(arr)):
+        if arr[i] in map:
+            return arr[i]
+        map.append(arr[i])
+        if (i >= k):
+            map.remove(arr[i-k])
+    return -1
+k = 3
+print(check_duplicate(A,k))
+print(check_duplicate(B,k))
+
