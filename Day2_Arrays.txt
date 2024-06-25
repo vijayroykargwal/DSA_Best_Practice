@@ -313,3 +313,21 @@ k = 3
 print(check_duplicate(A,k))
 print(check_duplicate(B,k))
 
+
+
+
+
+########################
+def test_write_unsupported_format(self, mock_is_supported, mock_get_format):
+        # Arrange
+        mock_get_format.return_value = "unsupported_format"
+        mock_is_supported.return_value = False
+
+        # Act and Assert
+        with self.assertRaises(Exception) as context:
+            self.writer.write(self.spark, self.df, self.metadata_json, self.recon_data)
+        
+        self.assertEqual(str(context.exception), "unsupported: unsupported_format")
+        mock_get_format.assert_called_once()
+        mock_is_supported.assert_called_once()
+################################################
