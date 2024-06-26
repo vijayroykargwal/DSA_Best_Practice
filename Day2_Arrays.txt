@@ -331,3 +331,18 @@ def test_write_unsupported_format(self, mock_is_supported, mock_get_format):
         mock_get_format.assert_called_once()
         mock_is_supported.assert_called_once()
 ################################################
+def setUp(self):
+        self.writer = MySparkWriter()
+        self.spark = MagicMock()
+        
+    @patch.object(MySparkWriter, 'get_file_format')
+    def test_write_unsupported_format(self, mock_get_format):
+        # Arrange
+        mock_get_format.return_value = "unsupported_format"
+
+        # Act and Assert
+        with self.assertRaises(Exception) as context:
+            self.writer.write(self.spark)
+        
+        self.assertEqual(str(context.exception), "unsupported: unsupported_format")
+        mock_get_format.assert_called_once()
